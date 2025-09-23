@@ -1,0 +1,18 @@
+[0.565s] Invoking command in '/home/armaanm/eufs_dev/eufs_data/build/lidar_tap': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/lidar_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/lidar_tap/build --no-deps symlink_data
+[0.751s] running develop
+[0.853s] running egg_info
+[0.853s] writing lidar_tap.egg-info/PKG-INFO
+[0.853s] writing dependency_links to lidar_tap.egg-info/dependency_links.txt
+[0.854s] writing entry points to lidar_tap.egg-info/entry_points.txt
+[0.854s] writing requirements to lidar_tap.egg-info/requires.txt
+[0.854s] writing top-level names to lidar_tap.egg-info/top_level.txt
+[0.875s] reading manifest file 'lidar_tap.egg-info/SOURCES.txt'
+[0.875s] writing manifest file 'lidar_tap.egg-info/SOURCES.txt'
+[0.898s] running build_ext
+[0.898s] Creating /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/python3.8/site-packages/lidar-tap.egg-link (link to .)
+[0.899s] Installing pcviewer script to /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/lidar_tap
+[0.899s] Installing velodyne_tap script to /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/lidar_tap
+[0.899s] 
+[0.899s] Installed /home/armaanm/eufs_dev/eufs_data/build/lidar_tap
+[0.899s] running symlink_data
+[0.925s] Invoked command in '/home/armaanm/eufs_dev/eufs_data/build/lidar_tap' returned '0': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/lidar_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/lidar_tap/build --no-deps symlink_data

@@ -1,0 +1,14 @@
+package.xml
+setup.cfg
+setup.py
+lidar_tap/__init__.py
+lidar_tap/lidarview.py
+lidar_tap/pointcloud_velodyne.py
+lidar_tap.egg-info/PKG-INFO
+lidar_tap.egg-info/SOURCES.txt
+lidar_tap.egg-info/dependency_links.txt
+lidar_tap.egg-info/entry_points.txt
+lidar_tap.egg-info/requires.txt
+lidar_tap.egg-info/top_level.txt
+lidar_tap.egg-info/zip-safe
+resource/lidar_tap

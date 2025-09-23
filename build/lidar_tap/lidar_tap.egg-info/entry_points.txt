@@ -1,0 +1,4 @@
+[console_scripts]
+pcviewer = lidar_tap.lidarview:main
+velodyne_tap = lidar_tap.pointcloud_velodyne:main
+

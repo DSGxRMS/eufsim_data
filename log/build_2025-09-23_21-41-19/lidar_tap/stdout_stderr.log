@@ -1,0 +1,24 @@
+running develop
+running egg_info
+creating lidar_tap.egg-info
+writing lidar_tap.egg-info/PKG-INFO
+writing dependency_links to lidar_tap.egg-info/dependency_links.txt
+writing entry points to lidar_tap.egg-info/entry_points.txt
+writing requirements to lidar_tap.egg-info/requires.txt
+writing top-level names to lidar_tap.egg-info/top_level.txt
+writing manifest file 'lidar_tap.egg-info/SOURCES.txt'
+reading manifest file 'lidar_tap.egg-info/SOURCES.txt'
+writing manifest file 'lidar_tap.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/python3.8/site-packages/site.py
+Creating /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/python3.8/site-packages/lidar-tap.egg-link (link to .)
+Installing pcviewer script to /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/lidar_tap
+Installing velodyne_tap script to /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/lidar_tap
+
+Installed /home/armaanm/eufs_dev/eufs_data/build/lidar_tap
+running symlink_data
+creating /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/share/ament_index
+creating /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/share/ament_index/resource_index
+creating /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/share/ament_index/resource_index/packages
+symbolically linking /home/armaanm/eufs_dev/eufs_data/build/lidar_tap/resource/lidar_tap -> /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/share/ament_index/resource_index/packages
+symbolically linking /home/armaanm/eufs_dev/eufs_data/build/lidar_tap/package.xml -> /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/share/lidar_tap
