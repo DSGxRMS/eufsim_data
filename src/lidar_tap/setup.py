@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'velodyne_tap = lidar_tap.pointcloud_velodyne:main',
-            'pcviewer = lidar_tap.lidarview:main'
+            'pcviewer = lidar_tap.lidarview:main',
+            'lidardata = lidar_tap.lidardata:main'
         ],
     },
 )

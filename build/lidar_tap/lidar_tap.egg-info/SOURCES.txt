@@ -2,6 +2,7 @@ package.xml
 setup.cfg
 setup.py
 lidar_tap/__init__.py
+lidar_tap/lidardata.py
 lidar_tap/lidarview.py
 lidar_tap/pointcloud_velodyne.py
 lidar_tap.egg-info/PKG-INFO
