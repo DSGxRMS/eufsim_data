@@ -3,10 +3,7 @@ setup.cfg
 setup.py
 gt_tap/__init__.py
 gt_tap/gt_cones_node.py
-gt_tap/gt_gps_node.py
 gt_tap/gt_pose_node.py
-gt_tap/gt_state_node.py
-gt_tap/gt_track_node.py
 gt_tap/gt_utils.py
 gt_tap/gt_wheels_node.py
 gt_tap.egg-info/PKG-INFO
