@@ -1,0 +1,24 @@
+[1.515s] Invoking command in '/home/armaanm/eufs_dev/eufs_data/src/ctrl_tap': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/ctrl_tap build --build-base /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/build install --record /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/install.log --single-version-externally-managed install_data
+[1.770s] running egg_info
+[1.771s] writing ../../build/ctrl_tap/ctrl_tap.egg-info/PKG-INFO
+[1.772s] writing dependency_links to ../../build/ctrl_tap/ctrl_tap.egg-info/dependency_links.txt
+[1.772s] writing entry points to ../../build/ctrl_tap/ctrl_tap.egg-info/entry_points.txt
+[1.772s] writing requirements to ../../build/ctrl_tap/ctrl_tap.egg-info/requires.txt
+[1.772s] writing top-level names to ../../build/ctrl_tap/ctrl_tap.egg-info/top_level.txt
+[1.811s] reading manifest file '../../build/ctrl_tap/ctrl_tap.egg-info/SOURCES.txt'
+[1.812s] writing manifest file '../../build/ctrl_tap/ctrl_tap.egg-info/SOURCES.txt'
+[1.813s] running build
+[1.813s] running build_py
+[1.813s] copying ctrl_tap/controls_node.py -> /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/build/lib/ctrl_tap
+[1.813s] running install
+[1.816s] running install_lib
+[1.818s] copying /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/build/lib/ctrl_tap/controls_node.py -> /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages/ctrl_tap
+[1.819s] byte-compiling /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages/ctrl_tap/controls_node.py to controls_node.cpython-38.pyc
+[1.822s] running install_data
+[1.822s] running install_egg_info
+[1.827s] removing '/home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages/ctrl_tap-0.0.0-py3.8.egg-info' (and everything under it)
+[1.828s] Copying ../../build/ctrl_tap/ctrl_tap.egg-info to /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages/ctrl_tap-0.0.0-py3.8.egg-info
+[1.829s] running install_scripts
+[1.856s] Installing command script to /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/ctrl_tap
+[1.857s] writing list of installed files to '/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/install.log'
+[1.909s] Invoked command in '/home/armaanm/eufs_dev/eufs_data/src/ctrl_tap' returned '0': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/ctrl_tap build --build-base /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/build install --record /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/install.log --single-version-externally-managed install_data

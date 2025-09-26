@@ -1,0 +1,3 @@
+[console_scripts]
+command = ctrl_tap.controls_node:main
+
