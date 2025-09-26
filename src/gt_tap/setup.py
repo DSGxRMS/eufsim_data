@@ -21,11 +21,9 @@ setup(
     entry_points={
         'console_scripts': [
             'gt_pose   = gt_tap.gt_pose_node:main',
-            'gt_state  = gt_tap.gt_state_node:main',
-            'gt_track  = gt_tap.gt_track_node:main',
             'gt_cones  = gt_tap.gt_cones_node:main',
             'gt_wheels = gt_tap.gt_wheels_node:main',
-            'gt_gps    = gt_tap.gt_gps_node:main',
+    
         ],
     },
 )
