@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'command = ctrl_tap.controls_node:main'
+            'command_vel = ctrl_tap.controls_node_velocity:main',
+            'command_acc = ctrl_tap.controls_node_acceleration:main'
         ],
     },
 )

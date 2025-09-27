@@ -8,11 +8,9 @@ setup.py
 ../../build/ctrl_tap/ctrl_tap.egg-info/requires.txt
 ../../build/ctrl_tap/ctrl_tap.egg-info/top_level.txt
 ../../build/ctrl_tap/ctrl_tap.egg-info/zip-safe
-ctrl_tap/PPC.py
-ctrl_tap/Trac1.py
-ctrl_tap/Vel_pro.py
 ctrl_tap/__init__.py
-ctrl_tap/controls_node.py
+ctrl_tap/controls_node_acceleration.py
+ctrl_tap/controls_node_velocity.py
 ctrl_tap.egg-info/PKG-INFO
 ctrl_tap.egg-info/SOURCES.txt
 ctrl_tap.egg-info/dependency_links.txt
