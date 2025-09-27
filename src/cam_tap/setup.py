@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'stereo_feed = cam_tap.stereo_feed_node:main'
+            'left_cam = cam_tap.left_feed_node:main',
+            'right_cam = cam_tap.right_feed_node:main'
         ],
     },
 )
