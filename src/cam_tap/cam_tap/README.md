@@ -1,6 +1,6 @@
 # Camera feed collection nodes
-To get the topics publishing, it is necessary to enable and align the gazebo based camera onto the racecar.
-Since for testing purposes we are using the eufs model, we will eit the file using the following steps
+To get the topics publishing, it is necessary to enable and align the gazebo based camera onto the racecar if it is not available as an active publisher.
+Since for testing purposes we are using the eufs model, we will edit the file using the following steps
 
 
 ## In the Ubuntu terminal
