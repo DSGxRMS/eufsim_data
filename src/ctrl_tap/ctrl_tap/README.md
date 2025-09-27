@@ -9,3 +9,5 @@ when selected acceleration input in GUI. Code is differentiated to take the acce
 
 If instead, velocity is needed
 run the other node ```command_vel```
+
+*Ensure that the RQT window is set to a specific event and the Driving status says Ready to actually run the code.*
