@@ -13,7 +13,11 @@ gt_tap/gt_cones_node.py
 gt_tap/gt_pose_node.py
 gt_tap/gt_utils.py
 gt_tap/gt_wheels_node.py
+gt_tap.egg-info/PKG-INFO
+gt_tap.egg-info/SOURCES.txt
+gt_tap.egg-info/dependency_links.txt
+gt_tap.egg-info/entry_points.txt
+gt_tap.egg-info/requires.txt
+gt_tap.egg-info/top_level.txt
+gt_tap.egg-info/zip-safe
 resource/gt_tap
-test/test_copyright.py
-test/test_flake8.py
-test/test_pep257.py

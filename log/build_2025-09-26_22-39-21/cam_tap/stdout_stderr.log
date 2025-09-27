@@ -1,0 +1,23 @@
+running develop
+running egg_info
+creating cam_tap.egg-info
+writing cam_tap.egg-info/PKG-INFO
+writing dependency_links to cam_tap.egg-info/dependency_links.txt
+writing entry points to cam_tap.egg-info/entry_points.txt
+writing requirements to cam_tap.egg-info/requires.txt
+writing top-level names to cam_tap.egg-info/top_level.txt
+writing manifest file 'cam_tap.egg-info/SOURCES.txt'
+reading manifest file 'cam_tap.egg-info/SOURCES.txt'
+writing manifest file 'cam_tap.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/armaanm/eufs_dev/eufs_data/install/cam_tap/lib/python3.8/site-packages/site.py
+Creating /home/armaanm/eufs_dev/eufs_data/install/cam_tap/lib/python3.8/site-packages/cam-tap.egg-link (link to .)
+Installing stereo_feed script to /home/armaanm/eufs_dev/eufs_data/install/cam_tap/lib/cam_tap
+
+Installed /home/armaanm/eufs_dev/eufs_data/build/cam_tap
+running symlink_data
+creating /home/armaanm/eufs_dev/eufs_data/install/cam_tap/share/ament_index
+creating /home/armaanm/eufs_dev/eufs_data/install/cam_tap/share/ament_index/resource_index
+creating /home/armaanm/eufs_dev/eufs_data/install/cam_tap/share/ament_index/resource_index/packages
+symbolically linking /home/armaanm/eufs_dev/eufs_data/build/cam_tap/resource/cam_tap -> /home/armaanm/eufs_dev/eufs_data/install/cam_tap/share/ament_index/resource_index/packages
+symbolically linking /home/armaanm/eufs_dev/eufs_data/build/cam_tap/package.xml -> /home/armaanm/eufs_dev/eufs_data/install/cam_tap/share/cam_tap

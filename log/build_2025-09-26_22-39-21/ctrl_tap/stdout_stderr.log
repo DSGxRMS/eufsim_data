@@ -1,0 +1,18 @@
+running develop
+running egg_info
+writing ctrl_tap.egg-info/PKG-INFO
+writing dependency_links to ctrl_tap.egg-info/dependency_links.txt
+writing entry points to ctrl_tap.egg-info/entry_points.txt
+writing requirements to ctrl_tap.egg-info/requires.txt
+writing top-level names to ctrl_tap.egg-info/top_level.txt
+reading manifest file 'ctrl_tap.egg-info/SOURCES.txt'
+writing manifest file 'ctrl_tap.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages/site.py
+Creating /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages/ctrl-tap.egg-link (link to .)
+Installing command script to /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/ctrl_tap
+
+Installed /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap
+running symlink_data
+symbolically linking /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/resource/ctrl_tap -> /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/share/ament_index/resource_index/packages
+symbolically linking /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/package.xml -> /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/share/ctrl_tap
