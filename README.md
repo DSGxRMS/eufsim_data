@@ -151,6 +151,21 @@ ros2 topic echo /<topic_name>
 ```
 ros2 launch eufs_launcher eufs_launcher.launch.py
 ```
+or
+```
+ros2 launch eufs_launcher simulation.launch.py \
+  use_sim_time:=true \
+  track:=skidpad \
+  vehicleModel:=DynamicBicycle \
+  commandMode:=acceleration \
+  vehicleModelConfig:=configDry.yaml \
+  robot_name:=eufs \
+  gazebo_gui:=true \
+  pub_ground_truth:=true \
+  launch_group:=no_perception \
+  rviz:=true
+```
+
 
 Use gazebo for testing and simulating, rqt interface for controls (manual or algorithmic).
 Track selection available on the GUI
