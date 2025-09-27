@@ -2,6 +2,80 @@
 Sample codes for the purpose of data collection and commands are organised in the repo. Add any templates or repeating package structure to the repository. Work in individual branches to avoid merge/pull/push conflicts.
 DO NOT CHANGE SOMEONE ELSE's CODE WITHOUT DISCUSSION. IF DONE, FIX THE MERGE CONFLICTS!
 
+## !!For git commands!!
+<details>
+<Summary>Click here to view</summary>
+
+# Git Basics 
+
+This guide covers the most common Git commands you’ll need for everyday work.
+
+---
+
+## Initialize a Repository and set URL
+```
+git init
+```
+and then
+```
+git add remote origin <url>
+```
+## Clone a repo
+```
+git clone <repo_name>
+```
+## Staging and Update
+Add files to stage with
+```
+git add <filename>
+```
+*Use '.' if staging all*
+
+```
+git commit -m "Add Message Here"
+```
+If pushing for the first time, set upstream:
+```
+git push -u origin main
+```
+else use directly - ```git push```
+
+To reset or remove files after ```git add .```
+use
+```
+git reset
+```
+*To discard changes use ```git reset --hard <commit_id>```
+
+## Checking past commits
+```
+git log --oneline
+```
+## Branching
+Check branches with
+```
+git branch
+```
+
+Create branch with
+```
+git branch <name>
+```
+
+Switch to branch with
+
+```
+git checkout <name>
+```
+
+## Merging branch to another
+```
+git merge <branch>
+```
+
+*In case of merge conflict, resolve manually. Only in worst possible cases use ```git rebase``` - rolls back to the last saved commit
+</details>
+
 ## Developed Packages
 * Ground truth - gt_tap
 * Lidar data - lidar_tap
