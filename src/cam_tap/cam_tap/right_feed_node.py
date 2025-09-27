@@ -10,7 +10,7 @@ class RightFeed(Node):
     def __init__(self):
         super().__init__('right_feed', automatically_declare_parameters_from_overrides=True)
         # Params
-        self.declare_parameter('topic', '/zed_right_camera/image_raw')
+        self.declare_parameter('topic', 'zed/right/image_rect_color')
         self.declare_parameter('reliability', 'best_effort')  # 'best_effort' or 'reliable'
         self.declare_parameter('window', 'right_cam')
 

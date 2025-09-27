@@ -1,0 +1,18 @@
+[3.088s] Invoking command in '/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/build --no-deps symlink_data
+[3.625s] running develop
+[3.939s] running egg_info
+[3.939s] writing ctrl_tap.egg-info/PKG-INFO
+[3.940s] writing dependency_links to ctrl_tap.egg-info/dependency_links.txt
+[3.940s] writing entry points to ctrl_tap.egg-info/entry_points.txt
+[3.940s] writing requirements to ctrl_tap.egg-info/requires.txt
+[3.941s] writing top-level names to ctrl_tap.egg-info/top_level.txt
+[4.005s] reading manifest file 'ctrl_tap.egg-info/SOURCES.txt'
+[4.007s] writing manifest file 'ctrl_tap.egg-info/SOURCES.txt'
+[4.080s] running build_ext
+[4.081s] Creating /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages/ctrl-tap.egg-link (link to .)
+[4.084s] Installing command_acc script to /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/ctrl_tap
+[4.085s] Installing command_vel script to /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/ctrl_tap
+[4.085s] 
+[4.086s] Installed /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap
+[4.086s] running symlink_data
+[4.208s] Invoked command in '/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap' returned '0': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/build --no-deps symlink_data

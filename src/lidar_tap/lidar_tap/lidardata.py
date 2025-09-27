@@ -100,9 +100,9 @@ class RANSAC:
                 if idx not in seen:
                     inliers.append(idx); seen.add(idx)
 
-            x1, y1, z1 = self.point_cloud.loc[inliers[0]]
-            x2, y2, z2 = self.point_cloud.loc[inliers[1]]
-            x3, y3, z3 = self.point_cloud.loc[inliers[2]]
+            x1, y1, z1 = self.point_cloud[inliers[0]]
+            x2, y2, z2 = self.point_cloud[inliers[1]]
+            x3, y3, z3 = self.point_cloud[inliers[2]]
 
             a = (y2 - y1)*(z3 - z1) - (z2 - z1)*(y3 - y1)
             b = (z2 - z1)*(x3 - x1) - (x2 - x1)*(z3 - z1)
@@ -122,14 +122,14 @@ class RANSAC:
             if len(cur) > len(inliers_result):
                 inliers_result = set(cur)
 
-        inlier_points = pd.DataFrame(columns=["X", "Y", "Z"])
-        outlier_points = pd.DataFrame(columns=["X", "Y", "Z"])
-        for index, row in self.point_cloud.iterrows():
+        inlier_points = []
+        outlier_points = []
+        for index, point in enumerate(self.point_cloud):
             if index in inliers_result:
-                inlier_points.loc[len(inlier_points)] = [row["X"], row["Y"], row["Z"]]
+                inlier_points.append(point)
             else:
-                outlier_points.loc[len(outlier_points)] = [row["X"], row["Y"], row["Z"]]
-        return inlier_points, outlier_points
+                outlier_points.append(point)
+        return np.array(inlier_points), np.array(outlier_points)
 
 
 # -------------------- ROS node (no visualization) --------------------
@@ -185,11 +185,10 @@ class VelodyneBenchmark(Node):
 
         # RANSAC (pandas)
         t1 = time.perf_counter()
-        df = pd.DataFrame(P, columns=["X","Y","Z"])
-        algo = RANSAC(df, max_iterations=self.ransac_iters, distance_ratio_threshold=self.ransac_thresh)
-        ground_df, nonground_df = algo._ransac_algorithm()
-        G  = ground_df.to_numpy(dtype=np.float32) if not ground_df.empty else np.empty((0,3), dtype=np.float32)
-        NG = nonground_df.to_numpy(dtype=np.float32) if not nonground_df.empty else np.empty((0,3), dtype=np.float32)
+        algo = RANSAC(P, max_iterations=self.ransac_iters, distance_ratio_threshold=self.ransac_thresh)
+        ground_points, nonground_points = algo._ransac_algorithm()
+        G  = ground_points if not ground_points.empty else np.empty((0,3), dtype=np.float32)
+        NG = nonground_points if not nonground_points.empty else np.empty((0,3), dtype=np.float32)
         t2 = time.perf_counter()
 
         # clustering (3D KDTree BFS)

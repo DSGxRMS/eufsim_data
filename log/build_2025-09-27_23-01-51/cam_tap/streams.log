@@ -1,0 +1,18 @@
+[1.383s] Invoking command in '/home/armaanm/eufs_dev/eufs_data/build/cam_tap': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/cam_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/cam_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/cam_tap/build --no-deps symlink_data
+[1.630s] running develop
+[1.773s] running egg_info
+[1.773s] writing cam_tap.egg-info/PKG-INFO
+[1.773s] writing dependency_links to cam_tap.egg-info/dependency_links.txt
+[1.773s] writing entry points to cam_tap.egg-info/entry_points.txt
+[1.774s] writing requirements to cam_tap.egg-info/requires.txt
+[1.774s] writing top-level names to cam_tap.egg-info/top_level.txt
+[1.808s] reading manifest file 'cam_tap.egg-info/SOURCES.txt'
+[1.809s] writing manifest file 'cam_tap.egg-info/SOURCES.txt'
+[1.840s] running build_ext
+[1.840s] Creating /home/armaanm/eufs_dev/eufs_data/install/cam_tap/lib/python3.8/site-packages/cam-tap.egg-link (link to .)
+[1.841s] Installing left_cam script to /home/armaanm/eufs_dev/eufs_data/install/cam_tap/lib/cam_tap
+[1.841s] Installing right_cam script to /home/armaanm/eufs_dev/eufs_data/install/cam_tap/lib/cam_tap
+[1.842s] 
+[1.842s] Installed /home/armaanm/eufs_dev/eufs_data/build/cam_tap
+[1.842s] running symlink_data
+[1.873s] Invoked command in '/home/armaanm/eufs_dev/eufs_data/build/cam_tap' returned '0': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/cam_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/cam_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/cam_tap/build --no-deps symlink_data
