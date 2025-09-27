@@ -163,10 +163,9 @@ ros2 launch eufs_launcher simulation.launch.py \
   robot_name:=eufs \
   gazebo_gui:=true \
   pub_ground_truth:=true \
-  launch_group:=no_perception \
   rviz:=true
 ```
-
+*Turn Rviz off if not needed*
 
 Use gazebo for testing and simulating, rqt interface for controls (manual or algorithmic).
 Track selection available on the GUI
