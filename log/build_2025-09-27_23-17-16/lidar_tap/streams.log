@@ -1,0 +1,19 @@
+[1.679s] Invoking command in '/home/armaanm/eufs_dev/eufs_data/build/lidar_tap': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/lidar_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/lidar_tap/build --no-deps symlink_data
+[1.995s] running develop
+[2.138s] running egg_info
+[2.139s] writing lidar_tap.egg-info/PKG-INFO
+[2.139s] writing dependency_links to lidar_tap.egg-info/dependency_links.txt
+[2.139s] writing entry points to lidar_tap.egg-info/entry_points.txt
+[2.139s] writing requirements to lidar_tap.egg-info/requires.txt
+[2.140s] writing top-level names to lidar_tap.egg-info/top_level.txt
+[2.173s] reading manifest file 'lidar_tap.egg-info/SOURCES.txt'
+[2.174s] writing manifest file 'lidar_tap.egg-info/SOURCES.txt'
+[2.203s] running build_ext
+[2.204s] Creating /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/python3.8/site-packages/lidar-tap.egg-link (link to .)
+[2.205s] Installing lidardata script to /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/lidar_tap
+[2.206s] Installing pcviewer script to /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/lidar_tap
+[2.206s] Installing velodyne_tap script to /home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/lidar_tap
+[2.206s] 
+[2.207s] Installed /home/armaanm/eufs_dev/eufs_data/build/lidar_tap
+[2.207s] running symlink_data
+[2.239s] Invoked command in '/home/armaanm/eufs_dev/eufs_data/build/lidar_tap' returned '0': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/lidar_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/lidar_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/lidar_tap/build --no-deps symlink_data

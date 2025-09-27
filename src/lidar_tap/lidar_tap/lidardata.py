@@ -21,6 +21,8 @@ from sklearn.neighbors import KDTree
 
 # -------------------- your helpers (1:1 semantics) --------------------
 def euclidean_clustering(P, radius):
+    if P.size == 0:
+        return []
     tree = KDTree(P)
     n_points = P.shape[0]
     visited = np.zeros(n_points, dtype=bool)
@@ -88,6 +90,8 @@ class RANSAC:
         self.distance_ratio_threshold = distance_ratio_threshold
 
     def _ransac_algorithm(self):
+        if self.point_cloud.shape[0] < 3:
+            return self.point_cloud.copy(), np.empty((0, 3), dtype=self.point_cloud.dtype)
         inliers_result = set()
         iters = self.max_iterations
         while iters:
@@ -111,7 +115,7 @@ class RANSAC:
             plane_len = max(0.1, math.sqrt(a*a + b*b + c*c))
 
             cur = inliers[:]
-            for index, row in self.point_cloud.iterrows():
+            for index, row in enumerate(self.point_cloud):
                 if index in inliers:
                     continue
                 x, y, z = row
@@ -150,8 +154,8 @@ class VelodyneBenchmark(Node):
         self.ransac_iters    = 25
         self.ransac_thresh   = 0.01
         self.cluster_radius  = 0.5
-        self.min_cluster_sz  = None
-        self.max_cluster_sz  = None
+        self.min_cluster_sz  = 15
+        self.max_cluster_sz  = 100
         self.recon_height    = 0.8
 
         # timing
@@ -183,12 +187,12 @@ class VelodyneBenchmark(Node):
             P = P[::int(self.decimate)]
         n_raw = P.shape[0]
 
-        # RANSAC (pandas)
+        # RANSAC (numpy)
         t1 = time.perf_counter()
         algo = RANSAC(P, max_iterations=self.ransac_iters, distance_ratio_threshold=self.ransac_thresh)
         ground_points, nonground_points = algo._ransac_algorithm()
-        G  = ground_points if not ground_points.empty else np.empty((0,3), dtype=np.float32)
-        NG = nonground_points if not nonground_points.empty else np.empty((0,3), dtype=np.float32)
+        G  = ground_points if ground_points.size else np.empty((0,3), dtype=np.float32)
+        NG = nonground_points if nonground_points.size else np.empty((0,3), dtype=np.float32)
         t2 = time.perf_counter()
 
         # clustering (3D KDTree BFS)
@@ -261,7 +265,7 @@ class VelodyneBenchmark(Node):
         else:
             data = np.ascontiguousarray(pts.astype(np.float32))
         return pc2.create_cloud(header, fields, data)
-    
+
 
 def main():
     rclpy.init()
