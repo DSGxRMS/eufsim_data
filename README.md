@@ -77,9 +77,10 @@ git merge <branch>
 </details>
 
 ## Developed Packages
-* Ground truth - gt_tap
-* Lidar data - lidar_tap
-* Controls Command - ctrl_tap
+* Ground truth - gt_tap  <details><summary> Click here to view nodes </summary> ```gt_pose```, ```gt_cones```, ```gt_wheels```</details>
+* Lidar data - lidar_tap <details><summary> Click here to view nodes </summary> ```velodyne_tap```, ```pcviewer```, ```lidardata```</details>
+* Controls Command - ctrl_tap <details><summary> Click here to view nodes </summary> </details>
+* Camera Feed - cam_tap <details><summary> Click here to view nodes </summary> ```left_cam```, ```right_cam```</details>
 
 
 # General ROS commands for use of packages:
