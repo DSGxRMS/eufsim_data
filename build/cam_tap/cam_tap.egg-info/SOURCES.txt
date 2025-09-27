@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+cam_tap/__init__.py
+cam_tap/stereo_feed_node.py
+cam_tap.egg-info/PKG-INFO
+cam_tap.egg-info/SOURCES.txt
+cam_tap.egg-info/dependency_links.txt
+cam_tap.egg-info/entry_points.txt
+cam_tap.egg-info/requires.txt
+cam_tap.egg-info/top_level.txt
+cam_tap.egg-info/zip-safe
+resource/cam_tap

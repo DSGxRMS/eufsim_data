@@ -1,0 +1,3 @@
+[console_scripts]
+stereo_feed = cam_tap.stereo_feed_node:main
+
