@@ -7,9 +7,9 @@
   <maintainer email="armaanmahajanbg@gmail.com">armaanm</maintainer>
   <license>TODO: License declaration</license>
 
-  <depend>eclpy</depend>
-  <depend>sensor_msgs</depend>
-  <depend>eufs_msgs</depend>
+  <exec_depend>eclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>eufs_msgs</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

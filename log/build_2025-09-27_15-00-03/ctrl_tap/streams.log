@@ -1,0 +1,17 @@
+[0.806s] Invoking command in '/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/build --no-deps symlink_data
+[0.952s] running develop
+[1.035s] running egg_info
+[1.035s] writing ctrl_tap.egg-info/PKG-INFO
+[1.036s] writing dependency_links to ctrl_tap.egg-info/dependency_links.txt
+[1.036s] writing entry points to ctrl_tap.egg-info/entry_points.txt
+[1.036s] writing requirements to ctrl_tap.egg-info/requires.txt
+[1.036s] writing top-level names to ctrl_tap.egg-info/top_level.txt
+[1.056s] reading manifest file 'ctrl_tap.egg-info/SOURCES.txt'
+[1.058s] writing manifest file 'ctrl_tap.egg-info/SOURCES.txt'
+[1.077s] running build_ext
+[1.078s] Creating /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages/ctrl-tap.egg-link (link to .)
+[1.080s] Installing command script to /home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/ctrl_tap
+[1.080s] 
+[1.080s] Installed /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap
+[1.080s] running symlink_data
+[1.112s] Invoked command in '/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap' returned '0': PYTHONPATH=/home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/armaanm/eufs_dev/eufs_data/install/ctrl_tap/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/armaanm/eufs_dev/eufs_data/build/ctrl_tap/build --no-deps symlink_data
