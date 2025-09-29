@@ -21,7 +21,9 @@ setup(
     entry_points={
         'console_scripts': [
             'left_cam = cam_tap.left_feed_node:main',
-            'right_cam = cam_tap.right_feed_node:main'
+            'right_cam = cam_tap.right_feed_node:main',
+            'left_record = cam_tap.left_record:main',
+            'right_record = cam_tap.right_record:main',
         ],
     },
 )

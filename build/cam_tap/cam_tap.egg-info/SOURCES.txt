@@ -3,6 +3,7 @@ setup.cfg
 setup.py
 cam_tap/__init__.py
 cam_tap/left_feed_node.py
+cam_tap/left_record.py
 cam_tap/right_feed_node.py
 cam_tap.egg-info/PKG-INFO
 cam_tap.egg-info/SOURCES.txt
