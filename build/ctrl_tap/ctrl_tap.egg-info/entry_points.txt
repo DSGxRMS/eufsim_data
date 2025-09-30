@@ -1,4 +1,0 @@
-[console_scripts]
-command_acc = ctrl_tap.controls_node_acceleration:main
-command_vel = ctrl_tap.controls_node_velocity:main
-
