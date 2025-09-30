@@ -1,5 +1,0 @@
-[console_scripts]
-lidardata = lidar_tap.lidardata:main
-pcviewer = lidar_tap.lidarview:main
-velodyne_tap = lidar_tap.pointcloud_velodyne:main
-
