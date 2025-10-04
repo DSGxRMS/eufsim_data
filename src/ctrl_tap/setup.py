@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'command_vel = ctrl_tap.controls_node_velocity:main',
-            'command_acc = ctrl_tap.controls_node_acceleration:main'
+            'command_acc = ctrl_tap.controls_node_acceleration:main',
+            'controls = ctrl_tap.controls_code:main',
         ],
     },
 )
