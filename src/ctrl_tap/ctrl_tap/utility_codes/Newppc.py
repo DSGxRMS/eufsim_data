@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import splprep, splev, interp1d
 import math
 import numpy as np
-import random
+import random, openpyxl
 
 # ---------- Load track from Excel ----------
-file_path = Path("/Users/manitraj/Desktop/RMS/Controls & VD/Tracks/zandvoort.xlsx")
+file_path = Path("Skitpad.xlsx")
 if not file_path.exists():
     raise FileNotFoundError(f"File not found: {file_path}")
 
-df = pd.read_excel(file_path)
+df = pd.read_excel(file_path, engine="openpyxl")
 numeric_cols = [c for c in df.columns if np.issubdtype(df[c].dtype, np.number)]
 if len(numeric_cols) < 2:
     raise ValueError("Excel must contain at least two numeric columns (x, y).")
