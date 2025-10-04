@@ -71,7 +71,7 @@ def yaw_from_quat(qx, qy, qz, qw) -> float:
 
 
 
-DATADIR = Path(__file__).parent / "aligned_pathpoints.csv"
+DATADIR = Path(__file__).parent / "track_5.csv"
 class PurePursuitNode(Node):
     def __init__(self):
         super().__init__("pure_pursuit_controller", automatically_declare_parameters_from_overrides=True)
@@ -113,7 +113,7 @@ class PurePursuitNode(Node):
         self.declare_parameter('speed.v_min',     5.0)
         self.declare_parameter('lookahead.base',  5.0)
         self.declare_parameter('lookahead.min',   2.0)
-        self.declare_parameter('lookahead.max',   15.0)
+        self.declare_parameter('lookahead.max',   12.0)
         self.declare_parameter('preview.T',       0.5)
         self.declare_parameter('preview.n_candidates', 20)
         self.declare_parameter('profile.kappa_speed_scale', 5.0)
