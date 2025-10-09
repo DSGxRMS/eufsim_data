@@ -16,9 +16,6 @@ from ackermann_msgs.msg import AckermannDriveStamped
 from sensor_msgs.msg import Image as RosImage
 from sensor_msgs.msg import CompressedImage as RosCompressedImage
 
-# NEW: time synchronization for paired capture
-from message_filters import Subscriber, ApproximateTimeSynchronizer, TimeSynchronizer
-
 
 # =============================
 #      Small helpers
@@ -56,13 +53,12 @@ class ImageWindow:
     def reset_window(self, now: float):
         self.start_t = now
         self.saved = 0
-        self.next_t = now  # save first frame asap in the new window
+        self.next_t = now  # save first frame asap
 
     def should_save(self, now: float) -> bool:
         if self.num_images <= 0:
             return False
         if self.saved >= self.num_images:
-            # wait for the next window boundary
             if now - self.start_t >= self.window_sec:
                 self.reset_window(now)
             return False
@@ -93,7 +89,7 @@ class FixedRouteDriver(Node):
         self.declare_parameter("accel_limit", 3.0)              # |m/s^2| clamp
 
         # segment lengths
-        self.declare_parameter("straight1_m", 16.0)
+        self.declare_parameter("straight1_m", 15.0)
         self.declare_parameter("straight2_m", 25.0)
 
         # topics
@@ -104,12 +100,8 @@ class FixedRouteDriver(Node):
         self.declare_parameter("left_image_topic", "/zed/left/image_rect_color")
         self.declare_parameter("right_image_topic", "/zed/right/image_rect_color")
         self.declare_parameter("image_transport", "raw")        # "raw" or "compressed"
-        self.declare_parameter("num_images", 10)                # per topic per window_seconds
+        self.declare_parameter("num_images", 10)                # per topic per 5 seconds
         self.declare_parameter("window_seconds", 5.0)
-
-        # sync control
-        self.declare_parameter("sync_exact", False)             # exact timestamp sync vs approximate
-        self.declare_parameter("sync_slop_ms", 40.0)            # tolerance for approximate sync
 
         # QoS
         self.declare_parameter("qos_best_effort", True)
@@ -140,8 +132,6 @@ class FixedRouteDriver(Node):
         self.image_transport = s("image_transport").lower()
         self.num_images      = i("num_images")
         self.window_seconds  = f("window_seconds")
-        self.sync_exact      = b("sync_exact")
-        self.sync_slop_ms    = f("sync_slop_ms")
         self.qos_best_effort = b("qos_best_effort")
 
         # -------- Image dirs (absolute from CWD) --------
@@ -184,65 +174,36 @@ class FixedRouteDriver(Node):
             reliability=QoSReliabilityPolicy.BEST_EFFORT if self.qos_best_effort
                         else QoSReliabilityPolicy.RELIABLE
         )
-
-        # Odometry + command
         self.create_subscription(Odometry, self.odom_topic, self._odom_cb, qos)
         self.pub_ack = self.create_publisher(AckermannDriveStamped, self.cmd_topic, 10)
 
-        # -------- Pair-driven image subscriptions (SYNCED) --------
-        self._setup_synced_image_subs(qos)
+        # images
+        self.left_win = ImageWindow(self.num_images, self.window_seconds)
+        self.right_win = ImageWindow(self.num_images, self.window_seconds)
+        now = time.time()
+        self.left_win.reset_window(now)
+        self.right_win.reset_window(now)
+
+        if self.image_transport == "compressed":
+            self.create_subscription(RosCompressedImage, self.left_topic, self._left_compressed_cb, qos)
+            self.create_subscription(RosCompressedImage, self.right_topic, self._right_compressed_cb, qos)
+            self.get_logger().info(f"[img] Subscribed CompressedImage: {self.left_topic}, {self.right_topic}")
+        else:
+            self.create_subscription(RosImage, self.left_topic, self._left_raw_cb, qos)
+            self.create_subscription(RosImage, self.right_topic, self._right_raw_cb, qos)
+            self.get_logger().info(f"[img] Subscribed raw Image: {self.left_topic}, {self.right_topic}")
 
         self.get_logger().info(
             f"[route] wheelbase={self.wheelbase:.3f} m, R={self.radius:.3f} m, delta_circle={self.delta_circle:.3f} rad"
+        )
+        self.get_logger().info(
+            f"[save] left->{self.left_dir.resolve()} right->{self.right_dir.resolve()} "
+            f"@ {self.num_images} imgs/{self.window_seconds}s"
         )
 
         # control timer
         self._start_time = time.time()
         self.timer = self.create_timer(1.0 / max(1.0, self.control_hz), self._tick)
-
-        # -------- Pair capture window (shared; ROS-time based) --------
-        self.pair_win = ImageWindow(self.num_images, self.window_seconds)
-        # initialize so the first synced pair will save immediately
-        self.pair_win.reset_window(0.0)
-
-    # -------- Sub setup --------
-    def _setup_synced_image_subs(self, qos: QoSProfile):
-        if self.image_transport == "compressed":
-            self.left_sub  = Subscriber(self, RosCompressedImage, self.left_topic,  qos_profile=qos)
-            self.right_sub = Subscriber(self, RosCompressedImage, self.right_topic, qos_profile=qos)
-            if self.sync_exact:
-                self.sync = TimeSynchronizer([self.left_sub, self.right_sub], queue_size=10)
-                self.sync.registerCallback(self._pair_compressed_cb_exact)
-                self.get_logger().info(f"[img] SYNC (Exact) CompressedImage: {self.left_topic} + {self.right_topic}")
-            else:
-                self.sync = ApproximateTimeSynchronizer(
-                    [self.left_sub, self.right_sub],
-                    queue_size=20,
-                    slop=self.sync_slop_ms / 1000.0,
-                    allow_headerless=False
-                )
-                self.sync.registerCallback(self._pair_compressed_cb)
-                self.get_logger().info(
-                    f"[img] SYNC (Approx, slop={self.sync_slop_ms:.1f}ms) CompressedImage: {self.left_topic} + {self.right_topic}"
-                )
-        else:
-            self.left_sub  = Subscriber(self, RosImage, self.left_topic,  qos_profile=qos)
-            self.right_sub = Subscriber(self, RosImage, self.right_topic, qos_profile=qos)
-            if self.sync_exact:
-                self.sync = TimeSynchronizer([self.left_sub, self.right_sub], queue_size=10)
-                self.sync.registerCallback(self._pair_raw_cb_exact)
-                self.get_logger().info(f"[img] SYNC (Exact) raw Image: {self.left_topic} + {self.right_topic}")
-            else:
-                self.sync = ApproximateTimeSynchronizer(
-                    [self.left_sub, self.right_sub],
-                    queue_size=20,
-                    slop=self.sync_slop_ms / 1000.0,
-                    allow_headerless=False
-                )
-                self.sync.registerCallback(self._pair_raw_cb)
-                self.get_logger().info(
-                    f"[img] SYNC (Approx, slop={self.sync_slop_ms:.1f}ms) raw Image: {self.left_topic} + {self.right_topic}"
-                )
 
     # -------- Callbacks --------
     def _odom_cb(self, msg: Odometry):
@@ -257,6 +218,7 @@ class FixedRouteDriver(Node):
     # -------- Publish helper (ACCEL-FIRST) --------
     def _publish_cmd(self, accel: float, steering: float):
         msg = AckermannDriveStamped()
+        # match your working API: acceleration + steering; speed can stay 0.0
         msg.drive.steering_angle = float(steering)
         msg.drive.acceleration   = float(accel)
         msg.drive.speed          = 0.0
@@ -336,89 +298,74 @@ class FixedRouteDriver(Node):
         accel_cmd = max(-self.accel_limit, min(self.accel_limit, self.accel_gain * v_err))
         self._publish_cmd(accel=accel_cmd, steering=steering_cmd)
 
-    # ======== Paired callbacks (RAW) ========
-    def _pair_raw_cb_exact(self, left_msg: RosImage, right_msg: RosImage):
-        self._save_pair_raw(left_msg, right_msg, exact=True)
+    # -------- Image callbacks (no cv_bridge) --------
+    def _left_raw_cb(self, msg: RosImage):
+        self._maybe_save_raw(msg, self.left_dir, "L")
 
-    def _pair_raw_cb(self, left_msg: RosImage, right_msg: RosImage):
-        self._save_pair_raw(left_msg, right_msg, exact=False)
+    def _right_raw_cb(self, msg: RosImage):
+        self._maybe_save_raw(msg, self.right_dir, "R")
 
-    def _save_pair_raw(self, left_msg: RosImage, right_msg: RosImage, exact: bool):
-        # Use ROS header time for scheduling and filenames
-        tns = int(left_msg.header.stamp.sec) * 10**9 + int(left_msg.header.stamp.nanosec)
-        now_ros = tns * 1e-9  # seconds
-        if not self.pair_win.should_save(now_ros):
+    def _left_compressed_cb(self, msg: RosCompressedImage):
+        self._maybe_save_compressed(msg, self.left_dir, "L")
+
+    def _right_compressed_cb(self, msg: RosCompressedImage):
+        self._maybe_save_compressed(msg, self.right_dir, "R")
+
+    def _maybe_save_raw(self, msg: RosImage, out_dir: Path, prefix: str):
+        now = time.time()
+        win = self.left_win if prefix == "L" else self.right_win
+        if not win.should_save(now):
             return
         try:
-            base = f"{tns}"  # identical base for L/R
-            self._save_raw_single(left_msg,  self.left_dir  / f"L_{base}.jpg")
-            self._save_raw_single(right_msg, self.right_dir / f"R_{base}.jpg")
-            self.pair_win.saved += 1
+            h, w = int(msg.height), int(msg.width)
+            enc = (msg.encoding or "rgb8").lower()
+            data = np.frombuffer(msg.data, dtype=np.uint8)
+
+            if enc in ("rgb8", "bgr8", "rgba8", "bgra8"):
+                channels = 4 if "a8" in enc else 3
+                expected = w * channels
+                if msg.step == expected:
+                    arr = data.reshape(h, w, channels)
+                else:
+                    arr = np.frombuffer(msg.data, dtype=np.uint8).reshape(h, msg.step)[:, :expected].reshape(h, w, channels)
+                # to RGB
+                if enc.startswith("bgr"):
+                    arr = arr[..., :3][:, :, ::-1]
+                elif enc.startswith("bgra"):
+                    arr = arr[..., :3][:, :, ::-1]
+                elif enc.endswith("a8"):
+                    arr = arr[..., :3]
+                pil = PILImage.fromarray(arr, mode="RGB")
+            elif enc in ("mono8", "8uc1"):
+                if msg.step == w:
+                    arr = data.reshape(h, w)
+                else:
+                    arr = np.frombuffer(msg.data, dtype=np.uint8).reshape(h, msg.step)[:, :w]
+                pil = PILImage.fromarray(arr, mode="L")
+            else:
+                expected = w * 3
+                arr = data.reshape(h, msg.step)[:, :expected].reshape(h, w, 3)
+                pil = PILImage.fromarray(arr, mode="RGB")
+
+            fname = out_dir / f"{prefix}_{int(now*1000)}.jpg"
+            pil.save(str(fname), format="JPEG", quality=92)
+            win.saved += 1
         except Exception as e:
-            mode = "exact" if exact else "approx"
-            self.get_logger().warn(f"{mode} pair raw save failed: {e}")
+            self.get_logger().warn(f"raw save failed: {e}")
 
-    # ======== Paired callbacks (COMPRESSED) ========
-    def _pair_compressed_cb_exact(self, left_msg: RosCompressedImage, right_msg: RosCompressedImage):
-        self._save_pair_compressed(left_msg, right_msg, exact=True)
-
-    def _pair_compressed_cb(self, left_msg: RosCompressedImage, right_msg: RosCompressedImage):
-        self._save_pair_compressed(left_msg, right_msg, exact=False)
-
-    def _save_pair_compressed(self, left_msg: RosCompressedImage, right_msg: RosCompressedImage, exact: bool):
-        tns = int(left_msg.header.stamp.sec) * 10**9 + int(left_msg.header.stamp.nanosec)
-        now_ros = tns * 1e-9
-        if not self.pair_win.should_save(now_ros):
+    def _maybe_save_compressed(self, msg: RosCompressedImage, out_dir: Path, prefix: str):
+        now = time.time()
+        win = self.left_win if prefix == "L" else self.right_win
+        if not win.should_save(now):
             return
         try:
-            base = f"{tns}"
-            self._save_compressed_single(left_msg,  self.left_dir  / f"L_{base}.jpg")
-            self._save_compressed_single(right_msg, self.right_dir / f"R_{base}.jpg")
-            self.pair_win.saved += 1
+            bio = io.BytesIO(bytes(msg.data))
+            pil = PILImage.open(bio).convert("RGB")
+            fname = out_dir / f"{prefix}_{int(now*1000)}.jpg"
+            pil.save(str(fname), format="JPEG", quality=92)
+            win.saved += 1
         except Exception as e:
-            mode = "exact" if exact else "approx"
-            self.get_logger().warn(f"{mode} pair compressed save failed: {e}")
-
-    # ======== per-message save helpers ========
-    def _save_raw_single(self, msg: RosImage, out_path: Path):
-        h, w = int(msg.height), int(msg.width)
-        enc = (msg.encoding or "rgb8").lower()
-        data = np.frombuffer(msg.data, dtype=np.uint8)
-
-        if enc in ("rgb8", "bgr8", "rgba8", "bgra8"):
-            channels = 4 if "a8" in enc else 3
-            expected = w * channels
-            if msg.step == expected:
-                arr = data.reshape(h, w, channels)
-            else:
-                arr = np.frombuffer(msg.data, dtype=np.uint8).reshape(h, msg.step)[:, :expected].reshape(h, w, channels)
-            # normalize to RGB
-            if enc.startswith("bgr"):
-                arr = arr[..., :3][:, :, ::-1]
-            elif enc.startswith("bgra"):
-                arr = arr[..., :3][:, :, ::-1]
-            elif enc.endswith("a8"):
-                arr = arr[..., :3]
-            pil = PILImage.fromarray(arr, mode="RGB")
-
-        elif enc in ("mono8", "8uc1"):
-            if msg.step == w:
-                arr = data.reshape(h, w)
-            else:
-                arr = np.frombuffer(msg.data, dtype=np.uint8).reshape(h, msg.step)[:, :w]
-            pil = PILImage.fromarray(arr, mode="L").convert("RGB")  # store as RGB JPEG for consistency
-
-        else:
-            # fallback: treat first 3 channels as RGB from row-major buffer
-            expected = w * 3
-            arr = data.reshape(h, msg.step)[:, :expected].reshape(h, w, 3)
-            pil = PILImage.fromarray(arr, mode="RGB")
-
-        pil.save(str(out_path), format="JPEG", quality=92)
-
-    def _save_compressed_single(self, msg: RosCompressedImage, out_path: Path):
-        bio = io.BytesIO(bytes(msg.data))
-        PILImage.open(bio).convert("RGB").save(str(out_path), format="JPEG", quality=92)
+            self.get_logger().warn(f"compressed save failed: {e}")
 
 
 def main():
