@@ -1,4 +1,5 @@
 build/
 install/
 log/
-data/
+src/cam_tap/cam_tap/dataset/
+src/cam_tap/cam_tap/dataset_bbox/
