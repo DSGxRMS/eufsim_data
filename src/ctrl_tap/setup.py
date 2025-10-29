@@ -25,6 +25,7 @@ setup(
             'controls = ctrl_tap.controls_code:main',
             'control_final = ctrl_tap.Control_final:main',
             'control_plotter = ctrl_tap.Control_plotter:main',
+            'velocity_profiler = ctrl_tap.controls_velpro:main',
         ],
     },
 )
