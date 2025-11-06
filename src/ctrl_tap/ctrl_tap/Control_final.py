@@ -98,7 +98,7 @@ class PathFollower(Node):
         self.th_pid = PID(3.2, 0.0, 0.0)
         self.steer_pid = PIDRange(kp=0.15, ki=0.05, kd=0.20, out_min=-0.60, out_max=0.60)
 
-        self.context = {
+        self.control_state = {
             'cur_idx': 0,
             'last_t': time.perf_counter(),
             'last_profile_t': time.perf_counter(),
@@ -160,8 +160,9 @@ class PathFollower(Node):
         # reuse your original control logic (unchanged core)
         cx, cy, yaw, speed = self._cx, self._cy, self._yaw, self._speed
         ctx = self.context
+        st = self.ctrl_state
         cur_idx, last_t, last_profile_t, prev_steering = (
-            ctx['cur_idx'], ctx['last_t'], ctx['last_profile_t'], ctx['prev_steering']
+            st['cur_idx'], st['last_t'], st['last_profile_t'], st['prev_steering']
         )
 
         now = time.perf_counter()
@@ -179,13 +180,13 @@ class PathFollower(Node):
             self.get_logger().info("Reached end of route and stopped. Exiting.")
             rclpy.shutdown()
 
-        ctx['cur_idx'] = cur_idx
-        ctx['last_t'] = last_t
-        ctx['last_profile_t'] = last_profile_t
-        ctx['prev_steering'] = prev_steering
+        st['cur_idx'] = cur_idx
+        st['last_t'] = last_t
+        st['last_profile_t'] = last_profile_t
+        st['prev_steering'] = prev_steering
 
 # ======================================================
-# ENTRY POINT
+# ENTRY POINT   
 # ======================================================
 def main():
     rclpy.init()
