@@ -26,6 +26,8 @@ setup(
             'control_final = ctrl_tap.Control_final:main',
             'control_plotter = ctrl_tap.Control_plotter:main',
             'velocity_profiler = ctrl_tap.controls_velpro:main',
+            'path_planner = ctrl_tap.path_points:main',
+            'path_view = ctrl_tap.path_view:main',
         ],
     },
 )
