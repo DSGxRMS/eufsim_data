@@ -1,160 +1,214 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+GT Cones visualizer (matplotlib)
+- Subscribes to /ground_truth/cones (EUFS) with BEST_EFFORT QoS
+- Plots BEV using matplotlib, color-coded by cone class
+- Colors: yellow, blue, orange, big_orange (unknown -> gray)
+
+Run:
+  ros2 run <your_pkg> gt_cones_matplot.py
+"""
 import math
+from typing import Tuple
+
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import qos_profile_sensor_data, QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
 
-# Optional viewer
-import cv2
 import numpy as np
+import matplotlib
+matplotlib.use("TkAgg")  # or leave default backend if already set
+import matplotlib.pyplot as plt
 
+
+# --------- Message import helper ---------
 def _import_cones_msg():
-    # Prefer WithCovariance; fall back to ConeArray if needed
+    """Prefer ConeArrayWithCovariance; fall back to ConeArray."""
     try:
         from eufs_msgs.msg import ConeArrayWithCovariance as ConesMsg
         return ConesMsg
     except Exception:
         from eufs_msgs.msg import ConeArray as ConesMsg
-        return ConesMsg  # <-- FIX: return the fallback type, not None
+        return ConesMsg
+
+
+def _xyz_from_cone(cone) -> Tuple[float, float, float]:
+    """
+    Try to extract (x,y,z) robustly from various EUFS cone message representations.
+    """
+    # Common paths seen in EUFS stacks
+    for attr in ("point", "position", "location"):
+        if hasattr(cone, attr):
+            p = getattr(cone, attr)
+            return float(getattr(p, "x", 0.0)), float(getattr(p, "y", 0.0)), float(getattr(p, "z", 0.0))
+    # Sometimes cones may directly have x,y,z
+    if hasattr(cone, "x") and hasattr(cone, "y"):
+        return float(cone.x), float(cone.y), float(getattr(cone, "z", 0.0))
+    # Fallback
+    return 0.0, 0.0, 0.0
+
 
 class GTConesTap(Node):
     def __init__(self):
         super().__init__('gt_cones_tap')
+
+        # ---- Topic & QoS (best effort) ----
         ConesMsg = _import_cones_msg()
         topic = '/ground_truth/cones'
-        self.sub = self.create_subscription(ConesMsg, topic, self.cb, qos_profile_sensor_data)
-        self.get_logger().info(f"Subscribing: {topic}")
+
+        # qos_profile_sensor_data already is depth=5, best-effort, volatile, keep-last.
+        # If you prefer explicit:
+        # qos = QoSProfile(
+        #     reliability=QoSReliabilityPolicy.BEST_EFFORT,
+        #     history=QoSHistoryPolicy.KEEP_LAST,
+        #     depth=10,
+        #     durability=QoSDurabilityPolicy.VOLATILE
+        # )
+        qos = qos_profile_sensor_data
+
+        self.sub = self.create_subscription(ConesMsg, topic, self.cb, qos)
+        self.get_logger().info(f"Subscribing (BEST_EFFORT): {topic}")
 
         # ---- Viewer params (ROS parameters) ----
-        self.declare_parameter('viz', True)                  # enable/disable window
-        self.declare_parameter('bev_width', 800)
-        self.declare_parameter('bev_height', 600)
-        # meters of world coords shown in BEV (x forward, y left)
-        self.declare_parameter('range_x', [-10.0, 40.0])     # forward/back
-        self.declare_parameter('range_y', [-15.0, 15.0])     # left/right
+        self.declare_parameter('viz', True)                  # enable/disable plot window
+        self.declare_parameter('range_x', [-10.0, 40.0])     # meters forward/back (x)
+        self.declare_parameter('range_y', [-15.0, 15.0])     # meters left/right (y)
+        self.declare_parameter('hz', 20.0)                   # plot refresh rate
 
         self.viz_enabled = bool(self.get_parameter('viz').value)
-        self.bev_w = int(self.get_parameter('bev_width').value)
-        self.bev_h = int(self.get_parameter('bev_height').value)
         rx = self.get_parameter('range_x').value
         ry = self.get_parameter('range_y').value
         self.range_x = (float(rx[0]), float(rx[1]))
         self.range_y = (float(ry[0]), float(ry[1]))
+        self.hz = float(self.get_parameter('hz').value)
 
-        # Precompute scales for BEV mapping
-        self._sx = self.bev_w / (self.range_x[1] - self.range_x[0])
-        self._sy = self.bev_h / (self.range_y[1] - self.range_y[0])
-
-        self._last_cones = None  # cache latest cones per class for drawing
-
-        if self.viz_enabled:
-            self.get_logger().info("Viewer window started. Press 'q' in the window to close.")
-            self.timer = self.create_timer(0.05, self._on_timer)  # ~20 Hz
-
-    # --- Utilities ---
-    @staticmethod
-    def _xyz_from_cone(cone):
-        p = cone.point
-        return float(p.x), float(p.y), float(p.z)
-
-    def _map_bev(self, x, y):
-        u = int((x - self.range_x[0]) * self._sx)
-        v = int((y - self.range_y[0]) * self._sy)
-        return u, self.bev_h - v  # flip vertically so +y (left) appears to the left
-
-    def _draw_bev(self, cones_dict):
-        img = np.zeros((self.bev_h, self.bev_w, 3), dtype=np.uint8)
-
-        # grid every 5m
-        for gx in np.arange(math.ceil(self.range_x[0]/5)*5, self.range_x[1]+1e-3, 5.0):
-            u0, v0 = self._map_bev(gx, self.range_y[0])
-            u1, v1 = self._map_bev(gx, self.range_y[1])
-            cv2.line(img, (u0, v0), (u1, v1), (40, 40, 40), 1)
-            cv2.putText(img, f"{gx:.0f}m", (u0+2, 14), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (80,80,80), 1, cv2.LINE_AA)
-
-        for gy in np.arange(math.ceil(self.range_y[0]/5)*5, self.range_y[1]+1e-3, 5.0):
-            u0, v0 = self._map_bev(self.range_x[0], gy)
-            u1, v1 = self._map_bev(self.range_x[1], gy)
-            cv2.line(img, (u0, v0), (u1, v1), (40, 40, 40), 1)
-            cv2.putText(img, f"{gy:.0f}m", (2, v0-2), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (80,80,80), 1, cv2.LINE_AA)
-
-        # color map (BGR)
-        colors = {
-            'blue_cones':         (255, 80,  60),
-            'yellow_cones':       (40,  220, 255),
-            'orange_cones':       (0,   140, 255),
-            'big_orange_cones':   (0,   90,  255),
-            'unknown_color_cones':(180, 180, 180),
+        # Cache latest cones by class for drawing
+        self._last_cones = {
+            'yellow_cones': [],
+            'blue_cones': [],
+            'orange_cones': [],
+            'big_orange_cones': [],
+            'unknown_color_cones': [],
         }
 
-        # Draw cones
-        radius = 3
-        for key, pts in cones_dict.items():
-            color = colors.get(key, (180, 180, 180))
-            for (x,y,z) in pts:
-                u,v = self._map_bev(x,y)
-                if 0 <= u < self.bev_w and 0 <= v < self.bev_h:
-                    cv2.circle(img, (u,v), radius, color, thickness=-1, lineType=cv2.LINE_AA)
+        # ---- Matplotlib setup ----
+        self._fig = None
+        self._ax = None
+        self._scatters = {}  # class -> PathCollection
 
-        # Car at origin (0,0)
-        u0, v0 = self._map_bev(0.0, 0.0)
-        cv2.circle(img, (u0, v0), 6, (0,255,0), thickness=2, lineType=cv2.LINE_AA)
-        cv2.putText(img, "car", (u0+8, v0-8), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+        if self.viz_enabled:
+            plt.ion()
+            self._fig, self._ax = plt.subplots(figsize=(7.5, 6))
+            self._ax.set_title("GT Cones — BEV (x forward, y left)")
+            self._ax.set_xlabel("x (m, forward)")
+            self._ax.set_ylabel("y (m, left)")
+            self._ax.set_aspect('equal', adjustable='box')
+            self._ax.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.4)
+            self._ax.set_xlim(self.range_x[0], self.range_x[1])
+            self._ax.set_ylim(self.range_y[0], self.range_y[1])
 
-        cv2.imshow("GT Cones — BEV", img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            self.get_logger().info("Closing BEV viewer.")
-            self.viz_enabled = False
-            cv2.destroyAllWindows()
-            if hasattr(self, 'timer'):
-                self.timer.cancel()
+            # Colors (matplotlib named colors)
+            self._colors = {
+                'blue_cones': 'tab:blue',
+                'yellow_cones': 'gold',
+                'orange_cones': 'orange',
+                'big_orange_cones': 'darkorange',
+                'unknown_color_cones': '0.6',   # gray
+            }
+
+            # Create one scatter per class
+            for k, c in self._colors.items():
+                self._scatters[k] = self._ax.scatter([], [], s=20, c=c, label=k.replace('_', ' '))
+
+            # Car at origin marker
+            self._ax.scatter([0.0], [0.0], s=60, facecolors='none', edgecolors='lime', linewidths=1.5, label='car (0,0)')
+
+            self._ax.legend(loc='upper right', fontsize=8, frameon=True)
+
+            # Timer to refresh plot
+            self.timer = self.create_timer(1.0 / max(self.hz, 1.0), self._on_timer)
+            self.get_logger().info("Matplotlib viewer started. Close the window to stop visualization.")
 
     # --- ROS callback ---
     def cb(self, msg):
-        ts = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
-
-        color_fields = ['blue_cones', 'yellow_cones', 'orange_cones', 'big_orange_cones', 'unknown_color_cones']
+        # Unpack by color classes present in EUFS message
+        color_fields = [
+            'yellow_cones',
+            'blue_cones',
+            'orange_cones',
+            'big_orange_cones',
+            'unknown_color_cones'
+        ]
 
         counts = {}
-        samples = {}
-        cones_dict = {k: [] for k in color_fields}
         total = 0
+        updated = {k: [] for k in color_fields}
 
         for key in color_fields:
             cones = getattr(msg, key, [])
             counts[key] = len(cones)
             total += counts[key]
             for c in cones:
-                cones_dict[key].append(self._xyz_from_cone(c))
-            samples[key] = cones_dict[key][:3]
+                updated[key].append(_xyz_from_cone(c))
 
-        parts = [f"t={ts:.3f}s", f"total={total}"]
-        parts += [f"{k}={counts[k]}" for k in color_fields]
+        self._last_cones = updated
+
+        # Log a compact line
+        try:
+            ts = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
+        except Exception:
+            ts = float('nan')
+        parts = [f"t={ts:.3f}s", f"total={total}"] + [f"{k}={counts[k]}" for k in color_fields]
         self.get_logger().info(" | ".join(parts))
 
-        self._last_cones = cones_dict
-
-    # --- Timer to draw at fixed rate ---
+    # --- Plot refresh ---
     def _on_timer(self):
         if not self.viz_enabled:
             return
-        if self._last_cones is None:
-            empty = {k: [] for k in ['blue_cones','yellow_cones','orange_cones','big_orange_cones','unknown_color_cones']}
-            self._draw_bev(empty)
-        else:
-            self._draw_bev(self._last_cones)
+        if self._fig is None or self._ax is None:
+            return
+        # If figure closed by user, stop updating
+        if not plt.fignum_exists(self._fig.number):
+            self.get_logger().info("Viewer closed.")
+            self.viz_enabled = False
+            return
+
+        # Update per-class scatter offsets
+        for key, scatter in self._scatters.items():
+            pts = self._last_cones.get(key, [])
+            if len(pts) == 0:
+                scatter.set_offsets(np.empty((0, 2)))
+            else:
+                arr = np.asarray([(x, y) for (x, y, _z) in pts], dtype=float)
+                scatter.set_offsets(arr)
+
+        # Light ticks every 5 m
+        self._ax.set_xlim(self.range_x[0], self.range_x[1])
+        self._ax.set_ylim(self.range_y[0], self.range_y[1])
+
+        self._fig.canvas.draw_idle()
+        plt.pause(0.001)  # yields to UI loop
+
+    def destroy_node(self):
+        # Close figure if still open
+        try:
+            if self._fig is not None and plt.fignum_exists(self._fig.number):
+                plt.close(self._fig)
+        except Exception:
+            pass
+        super().destroy_node()
+
 
 def main():
     rclpy.init()
-    n = GTConesTap()
+    node = GTConesTap()
     try:
-        rclpy.spin(n)
+        rclpy.spin(node)
     finally:
-        if n.viz_enabled:
-            cv2.destroyAllWindows()
-        n.destroy_node()
+        node.destroy_node()
         rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()

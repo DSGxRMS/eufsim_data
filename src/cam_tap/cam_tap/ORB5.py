@@ -7,8 +7,8 @@ from pathlib import Path
 from bbox_data import YOLOv5Detector
 
 # --- CONFIG ---
-left_img_path = r"C:\Users\shrey\Autonomous\L_52350000000.jpg"
-right_img_path = r"C:\Users\shrey\Autonomous\R_52350000000.jpg"
+left_img_path = r"./dataset_bbox/left.jpg"
+right_img_path = r"./dataset_bbox/right.jpg"
 baseline = 0.12  # meters
 focal_length_px = 700  # pixels
 

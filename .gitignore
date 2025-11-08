@@ -2,4 +2,5 @@ build/
 install/
 log/
 src/cam_tap/cam_tap/dataset/
-src/cam_tap/cam_tap/dataset_bbox/
+src/cam_tap/cam_tap/dataset_bbox/__pycache__/
+*.pyc
