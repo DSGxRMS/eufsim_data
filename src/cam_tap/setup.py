@@ -24,7 +24,8 @@ setup(
             'right_cam = cam_tap.right_feed_node:main',
             'cam_record = cam_tap.feed_record:main',
             'bbox = cam_tap.bbox_data:main',
-            'liveorb = cam_tap.LiveORB:main'
+            'liveorb = cam_tap.LiveORB:main',
+            'livecheck = cam_tap.LiveORBCompare:main'
         ],
     },
 )
