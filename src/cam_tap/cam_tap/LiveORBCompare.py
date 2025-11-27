@@ -105,10 +105,12 @@ class YOLOv5:
             self.model = torch.hub.load(str(repo), "custom", path=str(weights), source="local")
             self.model.to(self.device).eval()
             self.ok = True
-        except: self.ok = False
+        except:
+            self.ok = False
 
     def infer(self, img):
-        if not self.ok: return []
+        if not self.ok:
+            return []
         res = self.model(img, size=640)
         dets = []
         if len(res.xyxy) > 0:
@@ -148,7 +150,8 @@ class StableMapperNode(Node):
         try:
             from eufs_msgs.msg import ConeArrayWithCovariance
             self.create_subscription(ConeArrayWithCovariance, "/ground_truth/cones", self.cb_gt, qos_profile_sensor_data)
-        except: pass
+        except:
+            pass
 
         self.create_timer(0.1, self.process_pipeline)
 
@@ -157,29 +160,41 @@ class StableMapperNode(Node):
         self.timer_plot = self.create_timer(0.1, self.update_plot)
         self.get_logger().info("Stable Mapper Node Running.")
 
-    def cb_left(self, msg): self.last_img_l = msg
-    def cb_right(self, msg): self.last_img_r = msg
+    def cb_left(self, msg):
+        self.last_img_l = msg
+
+    def cb_right(self, msg):
+        self.last_img_r = msg
+
     def cb_odom(self, msg):
         p = msg.pose.pose.position
         q = msg.pose.pose.orientation
         siny = 2 * (q.w * q.z + q.x * q.y)
         cosy = 1 - 2 * (q.y * q.y + q.z * q.z)
         yaw = math.atan2(siny, cosy)
-        with self.lock: self.current_odom = (p.x, p.y, yaw)
+        with self.lock:
+            self.current_odom = (p.x, p.y, yaw)
 
     def cb_gt(self, msg):
         temp = []
-        sources = [(msg.blue_cones, 0), (msg.yellow_cones, 1), (msg.orange_cones, 2), (msg.big_orange_cones, 3)]
+        # Map EUFS fields → class IDs that match COLORS:
+        # 0: yellow, 1: blue, 2: orange, 3: big orange
+        sources = [
+            (msg.yellow_cones, 0),       # yellow
+            (msg.blue_cones, 1),         # blue
+            (msg.orange_cones, 2),       # orange
+            (msg.big_orange_cones, 3),   # big orange
+        ]
         for cones, cid in sources:
             for c in cones:
                 x, y = get_gt_pt(c)
-                if cid == 0: cid = 1 
-                elif cid == 1: cid = 0
                 temp.append((x, y, cid))
-        with self.lock: self.gt_cones = temp
+        with self.lock:
+            self.gt_cones = temp
 
     def apply_motion_compensation(self):
-        if self.last_odom is None or self.current_odom is None: return
+        if self.last_odom is None or self.current_odom is None:
+            return
         x1, y1, yaw1 = self.last_odom
         x2, y2, yaw2 = self.current_odom
         
@@ -201,18 +216,21 @@ class StableMapperNode(Node):
             cone.apply_odom(forward, side, dyaw)
 
     def process_pipeline(self):
-        if self.last_img_l is None or self.last_img_r is None: return
+        if self.last_img_l is None or self.last_img_r is None:
+            return
         
         # 1. Update Odom Physics
         with self.lock:
             self.apply_motion_compensation()
-            if self.current_odom: self.last_odom = self.current_odom
+            if self.current_odom:
+                self.last_odom = self.current_odom
 
         try:
             imgL_color = self.bridge.imgmsg_to_cv2(self.last_img_l, "bgr8")
             imgL = cv2.cvtColor(imgL_color, cv2.COLOR_BGR2GRAY)
             imgR = self.bridge.imgmsg_to_cv2(self.last_img_r, "mono8")
-        except: return
+        except:
+            return
 
         # 2. Vision
         disp_map = self.stereo.compute(imgL, imgR).astype(np.float32) / 16.0
@@ -222,11 +240,13 @@ class StableMapperNode(Node):
         new_measurements = []
         
         for x1, y1, x2, y2, cls_id in boxes:
-            if x1<0 or y2>disp_map.shape[0] or x2>disp_map.shape[1]: continue
+            if x1 < 0 or y2 > disp_map.shape[0] or x2 > disp_map.shape[1]:
+                continue
             
             roi = disp_map[y1:y2, x1:x2]
             valid = roi[roi > 1.0]
-            if len(valid) < 10: continue
+            if len(valid) < 10:
+                continue
             
             disp = np.median(valid)
             if 2.0 < disp < 150.0:
@@ -254,7 +274,8 @@ class StableMapperNode(Node):
                 best_idx = -1
                 
                 for i, (mx, my, mcls) in enumerate(measurements):
-                    if i in used_meas: continue
+                    if i in used_meas:
+                        continue
                     dist = math.hypot(cone.x - mx, cone.y - my)
                     if dist < best_dist:
                         best_dist = dist
@@ -288,13 +309,15 @@ class StableMapperNode(Node):
         self.ax.grid(True, alpha=0.3)
         self.ax.plot(0, 0, '^', color='lime', ms=12, label='Ego')
 
+        # GT cones: all, hollow, correct colors
         for x, y, c in gt:
             col = COLORS.get(c, 'black')
             self.ax.plot(y, x, 'o', color=col, fillstyle='none', ms=10, mew=2)
 
+        # Algo cones: only confirmed, solid, correct colors
         for c in map_data:
-            # Only show confirmed cones
-            if c.count < MIN_CONFIDENCE: continue
+            if c.count < MIN_CONFIDENCE:
+                continue
             
             x, y = c.x, c.y
             col = COLORS.get(c.best_cls, 'black')
@@ -305,7 +328,10 @@ class StableMapperNode(Node):
 
 def main():
     rclpy.init()
-    try: rclpy.spin(StableMapperNode())
-    except KeyboardInterrupt: pass
+    try:
+        rclpy.spin(StableMapperNode())
+    except KeyboardInterrupt:
+        pass
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    main()
